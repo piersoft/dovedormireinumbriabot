@@ -115,29 +115,45 @@ foreach ($parsed_json->{'features'} as $i => $value) {
 
 	if ($string==0){
 		$filter=$parsed_json->{'features'}[$i]->{'properties'}->{'nome_comune'};
+		if (strtoupper($filter)==strtoupper($text)){
+						$ciclo++;
 
+						$homepage = "Nome\Name: <b>".$parsed_json->{'features'}[$i]->{'properties'}->{'denominazione_struttura'}."</b>\n";
+						if ($string!=0) $homepage .= "Località\Location: <b>".$parsed_json->{'features'}[$i]->{'properties'}->{'nome_comune'}."</b>\n";
+						$homepage .= "Tipologia\Typology: <b>".utf8_decode($parsed_json->{'features'}[$i]->{'properties'}->{'categoria'})."</b>\n";
+						if (strip_tags($parsed_json->{'features'}[$i]->{'properties'}->{'nome_comune'}) !=null)	$homepage .= "Località\Location: <b>".$parsed_json->{'features'}[$i]->{'properties'}->{'nome_comune'}."</b>\n";
+						$homepage .= "Clicca per dettagli\Click for details: /".$i."\n";
+						$homepage .="____________";
+						$chunks = str_split($homepage, self::MAX_LENGTH);
+						foreach($chunks as $chunk) {
+						$content = array('chat_id' => $chat_id, 'text' => $chunk,'disable_web_page_preview'=>true,'parse_mode'=>"HTML");
+						$telegram->sendMessage($content);
+
+						}
+						}
 	}else{
 		$filter=$parsed_json->{'features'}[$i]->{'properties'}->{'denominazione_struttura'};
+		if(strpos(strtoupper($filter),strtoupper($text)) !== false){
+						$ciclo++;
 
+						$homepage = "Nome\Name: <b>".$parsed_json->{'features'}[$i]->{'properties'}->{'denominazione_struttura'}."</b>\n";
+						if ($string!=0) $homepage .= "Località\Location: <b>".$parsed_json->{'features'}[$i]->{'properties'}->{'nome_comune'}."</b>\n";
+						$homepage .= "Tipologia\Typology: <b>".utf8_decode($parsed_json->{'features'}[$i]->{'properties'}->{'categoria'})."</b>\n";
+						if (strip_tags($parsed_json->{'features'}[$i]->{'properties'}->{'nome_comune'}) !=null)	$homepage .= "Località\Location: <b>".$parsed_json->{'features'}[$i]->{'properties'}->{'nome_comune'}."</b>\n";
+						$homepage .= "Clicca per dettagli\Click for details: /".$i."\n";
+						$homepage .="____________";
+						$chunks = str_split($homepage, self::MAX_LENGTH);
+						foreach($chunks as $chunk) {
+						$content = array('chat_id' => $chat_id, 'text' => $chunk,'disable_web_page_preview'=>true,'parse_mode'=>"HTML");
+						$telegram->sendMessage($content);
+
+						}
+						}
 	}
 
 
 
-if (strpos(strtoupper($filter),strtoupper($text)) !== false ){
-				$ciclo++;
 
-				$homepage = "Nome: <b>".$parsed_json->{'features'}[$i]->{'properties'}->{'denominazione_struttura'}."</b>\n";
-				if ($string!=0) $homepage .= "Località: <b>".$parsed_json->{'features'}[$i]->{'properties'}->{'nome_comune'}."</b>\n";
-				$homepage .= "Tipologia: <b>".utf8_decode($parsed_json->{'features'}[$i]->{'properties'}->{'categoria'})."</b>\n";
-				$homepage .= "Clicca per dettagli: /".$i."\n";
-				$homepage .="____________";
-				$chunks = str_split($homepage, self::MAX_LENGTH);
-				foreach($chunks as $chunk) {
-				$content = array('chat_id' => $chat_id, 'text' => $chunk,'disable_web_page_preview'=>true,'parse_mode'=>"HTML");
-				$telegram->sendMessage($content);
-
-				}
-				}
 				if ($ciclo>=20 && $all==0){
 					$location="Troppe strutture per questa ricerca, ti ho mostrato le prime 20.\nSe proprio vuoi averle tutte <b>(potrebbero essere centinaia ATTENZIONE!!)</b>, allora digita la località anteponendo il carattere !.\nEsempio !Norcia";
 					$content = array('chat_id' => $chat_id, 'text' => $location,'disable_web_page_preview'=>true,'parse_mode'=>"HTML");
@@ -280,7 +296,7 @@ if ($ciclo==0){
 	 				}else 	$comune .=$parsed_json->{'address'}->{'city'};
 
 	 				if ($parsed_json->{'address'}->{'village'}) $comune .=$parsed_json->{'address'}->{'village'};
-	 				$location="Sto cercando le strutture ricettive a \"".ucfirst($comune)."\" ";
+	 				$location="Sto cercando le strutture ricettive vicine a \"".ucfirst($comune)."\" ";
 	 				// tramite le coordinate che hai inviato: ".$lat.",".$lon;
 	 				$content = array('chat_id' => $chat_id, 'text' => $location,'disable_web_page_preview'=>true);
 	 				$telegram->sendMessage($content);
